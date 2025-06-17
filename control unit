@@ -1,0 +1,29 @@
+
+
+module control_unit(input [3:0]opcode,output reg regwrite,output reg mem_read,output reg mem_write);
+always@(*)begin
+case(opcode)
+4'b0000,4'b0001,4'b0010,4'b0011,4'b0100,4'b0101,4'b0110,4'b0111,4'b1000,4'b1001,4'b1010,4'b1011,4'b1100 :begin
+regwrite=1;
+mem_read=0;
+mem_write=0;
+end
+4'b1110:begin//load
+regwrite=1;
+mem_read=1;
+mem_write=0;
+
+end
+4'b1111:begin//store
+regwrite=0;
+mem_read=0;
+mem_write=1;
+end
+default:begin
+regwrite=0;
+mem_read = 0;
+mem_write = 0;
+end
+endcase
+end
+endmodule
