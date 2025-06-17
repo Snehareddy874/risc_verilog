@@ -1,0 +1,32 @@
+module alu(input [3:0]r1, input [3:0]r2, input [3:0]opcode, output reg [7:0]y);
+wire [7:0]sum_out, sub_out, mul_out;
+wire [3:0]r2_neg;
+
+assign r2_neg=(~r2 + 1);
+
+
+// Instantiate CLA for ADD and SUB
+cla cla_add(.a(r1),.b(r2),.y(sum_out));
+cla cla_sub(.a(r1),.b(r2_neg),.y(sub_out));
+
+am am_mul(.a(r1),.b(r2),.y(mul_out));
+
+always @(*) begin
+case(opcode)
+4'b0000: y = sum_out;//add
+4'b0001: y = sub_out;//sub
+4'b0010: y = r1 & r2;//and
+4'b0011: y = r1 | r2;//or
+4'b0100: y = ~r2;//not
+4'b0101: y = r1 ^ r2;//xor
+4'b0110: y = r1 << 1;//left shift
+4'b0111: y = r1 >> 1;//right sift
+4'b1000: y = r1 + 1;//increament
+4'b1001: y = r1 - 1;//decreament
+4'b1010: y = ~r1 + 1;//negative(2's compliment)
+4'b1011: y = r1;//pass
+4'b1100: y = mul_out;//unsigned array mutliplier
+default: y = 8'b00000000;
+endcase
+end
+endmodule
