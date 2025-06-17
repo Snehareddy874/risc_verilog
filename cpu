@@ -1,0 +1,46 @@
+
+module cpu(input clk,rst,output [15:0]y );
+wire [15:0]instruction;
+wire [3:0]reg1,reg2,opcode;
+wire[3:0] a,b;
+wire [7:0]result;
+wire [3:0]pc_val;
+wire regwrite,mem_read,mem_write;
+wire [7:0] mem_out;
+
+pc c(.clk(clk),.rst(rst),.pc_out(pc_val));
+rom m(.addr(pc_val),.instr(instruction));
+assign opcode=instruction[15:12];
+assign reg1=instruction[11:8];
+assign reg2=instruction[7:4];
+reg [3:0]regfile[0:3];//4*4reg file
+
+assign a=regfile[reg1];
+assign b=regfile[reg2];
+alu al(.r1(a),.r2(b),.opcode(opcode),.y(result));
+
+control_unit u(.opcode(opcode),.regwrite(regwrite),.mem_read(mem_read),.mem_write(mem_write));
+data_mem dm (
+    .clk(clk),
+    .mem_read(mem_read),
+    .mem_write(mem_write),
+    .addr(reg2),
+    .write_data(result),
+    .read_data(mem_out)
+);
+
+always @(posedge clk) begin
+if(rst)begin
+regfile[0] = 4'd0;
+regfile[1] = 4'd1;
+regfile[2] = 4'd2;
+regfile[3] = 4'd3;
+end else if (regwrite) begin
+if (mem_read)                    
+regfile[reg1] <=mem_out[3:0];
+else                             
+regfile[reg1]<=result[3:0];
+end
+end
+
+endmodule
