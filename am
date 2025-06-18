@@ -1,0 +1,45 @@
+module am(input[3:0]a,b,output[7:0]y);
+wire p00,p01,p02,p03,p10,p11,p12,p13,p20,p21,p22,p23,p30,p31,p32,p33;
+wire s1,c1,s2,c2,s3,c3,s4,c4,s5,c5,s6,c6,s7,c7,s8,c8,s9,c9,s10,c10,s11,c11,s12,c12,s13,c13,s14,c14,s15,c15;
+assign p00=a[0]&b[0];
+assign p01=a[1]&b[0];
+assign p02=a[2]&b[0];
+assign p03=a[3]&b[0];
+assign p10=a[0]&b[1];
+assign p11=a[1]&b[1];
+assign p12=a[2]&b[1];
+assign p13=a[3]&b[1];
+assign p20=a[0]&b[2];
+assign p21=a[1]&b[2];
+assign p22=a[2]&b[2];
+assign p23=a[3]&b[2];
+assign p30=a[0]&b[3];
+assign p31=a[1]&b[3];
+assign p32=a[2]&b[3];
+assign p33=a[3]&b[3];
+assign y[0]=p00;
+fa fa1(p01,p10,1'b0,s1,c1);
+fa fa2(p02,p11,c1,s2,c2);
+fa fa3(p03,p12,c2,s3,c3);
+fa fa4(1'b0,p13,c3,s4,c4);
+fa fa5(s2,p20,1'b0,s5,c5);
+fa fa6(s3,p21,c5,s6,c6);
+fa fa7(s4,p22,c6,s7,c7);
+fa fa8(c4,p23,c7,s8,c8);
+fa fa9(s5,p30,1'b0,s9,c9);
+fa fa10(s6,p31,c9,s10,c10);
+fa fa11(s7,p32,c10,s11,c11);
+fa fa12(s8,p33,c11,s12,c12);
+assign y[1]=s1;
+assign y[2]=s5;
+assign y[3]=s9;
+assign y[4]=s10;
+assign y[5]=s11;
+assign y[6]=s12;
+assign y[7]=c12;
+endmodule
+
+module fa(input a,b,cin,output sum,carry);
+assign sum=a^b^cin;
+assign carry=(a&b)|(b&cin)|(a&cin);
+endmodule
