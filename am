@@ -1,6 +1,5 @@
-module am(input[3:0]a,b,output[7:0]y);
+module am(input [3:0]a,input [3:0]b,output [7:0]y);
 wire p00,p01,p02,p03,p10,p11,p12,p13,p20,p21,p22,p23,p30,p31,p32,p33;
-wire s1,c1,s2,c2,s3,c3,s4,c4,s5,c5,s6,c6,s7,c7,s8,c8,s9,c9,s10,c10,s11,c11,s12,c12,s13,c13,s14,c14,s15,c15;
 assign p00=a[0]&b[0];
 assign p01=a[1]&b[0];
 assign p02=a[2]&b[0];
@@ -17,29 +16,39 @@ assign p30=a[0]&b[3];
 assign p31=a[1]&b[3];
 assign p32=a[2]&b[3];
 assign p33=a[3]&b[3];
-assign y[0]=p00;
-fa fa1(p01,p10,1'b0,s1,c1);
-fa fa2(p02,p11,c1,s2,c2);
-fa fa3(p03,p12,c2,s3,c3);
-fa fa4(1'b0,p13,c3,s4,c4);
-fa fa5(s2,p20,1'b0,s5,c5);
-fa fa6(s3,p21,c5,s6,c6);
-fa fa7(s4,p22,c6,s7,c7);
-fa fa8(c4,p23,c7,s8,c8);
-fa fa9(s5,p30,1'b0,s9,c9);
-fa fa10(s6,p31,c9,s10,c10);
-fa fa11(s7,p32,c10,s11,c11);
-fa fa12(s8,p33,c11,s12,c12);
-assign y[1]=s1;
-assign y[2]=s5;
-assign y[3]=s9;
-assign y[4]=s10;
-assign y[5]=s11;
-assign y[6]=s12;
-assign y[7]=c12;
+wire c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15;
+wire x1,x2,x3,x4,x5,x6,x7,x8,x9;
+wire cout;
+fa u1(.a(p00),.b(1'b0),.cin(1'b0),.cout(c1),.y(y[0]));
+fa u2(.a(p01),.b(1'b0),.cin(c1),.cout(c2),.y(x1));
+fa u3(.a(p02),.b(1'b0),.cin(c2),.cout(c3),.y(x2));
+fa u4(.a(p03),.b(1'b0),.cin(c3),.cout(c4),.y(x3));
+
+fa u5(.a(p10),.b(x1),.cin(1'b0),.cout(c5),.y(y[1]));
+fa u6(.a(p11),.b(x2),.cin(c5),.cout(c6),.y(x4));
+fa u7(.a(p12),.b(x3),.cin(c6),.cout(c7),.y(x5));
+fa u8(.a(p13),.b(c4),.cin(c7),.cout(c8),.y(x6));
+
+fa u9(.a(p20),.b(x4),.cin(1'b0),.cout(c9),.y(y[2]));
+fa u10(.a(p21),.b(x5),.cin(c9),.cout(c10),.y(x7));
+fa u11(.a(p22),.b(x6),.cin(c10),.cout(c11),.y(x8));
+fa u12(.a(p23),.b(c8),.cin(c11),.cout(c12),.y(x9));
+
+fa u13(.a(p30),.b(x7),.cin(1'b0),.cout(c13),.y(y[3]));
+fa u14(.a(p31),.b(x8),.cin(c13),.cout(c14),.y(y[4]));
+fa u15(.a(p32),.b(x9),.cin(c14),.cout(c15),.y(y[5]));
+fa u16(.a(p33),.b(c12),.cin(c15),.cout(cout),.y(y[6]));
+
 endmodule
 
-module fa(input a,b,cin,output sum,carry);
-assign sum=a^b^cin;
-assign carry=(a&b)|(b&cin)|(a&cin);
+module fa(input a,input b,input cin,output cout,output y);
+wire c1,c2,o1;
+ha u(.a(a),.b(b),.cout(c1),.out(o1));
+ha v(.a(o1),.b(cin),.cout(c2),.out(y));
+assign cout=c1|c2;
+endmodule
+
+module ha(input a,input b,output cout,output out);
+assign out=a^b;
+assign cout=a&b;
 endmodule
